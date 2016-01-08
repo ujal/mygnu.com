@@ -121,7 +121,7 @@ $ ->
 
 
     # EVENTS
-    isTouch = 'createTouch' of document
+    isTouch = 'ontouchstart' in window
 
     pointerdown = if isTouch then 'touchstart' else 'mousedown'
     pointerup   = if isTouch then 'touchend' else 'mouseup'
@@ -138,13 +138,13 @@ $ ->
     else document.addEventListener 'mousemove', onMouseMove, false
 
     if not isTouch
-        $('.nav li').hover(
-            ->
-                (p.isSettled = false) for p in charParticles
-                isHover = true
-            ->
-                isHover = false
-        )
+      $('.nav li').hover(
+          ->
+              (p.isSettled = false) for p in charParticles
+              isHover = true
+          ->
+              isHover = false
+      )
 
     $('.nav li').on pointerdown, ->
         (p.isSettled = false) for p in charParticles
