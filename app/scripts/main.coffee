@@ -121,7 +121,7 @@ $ ->
 
 
     # EVENTS
-    isTouch = 'ontouchstart' in window
+    isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints
 
     pointerdown = if isTouch then 'touchstart' else 'mousedown'
     pointerup   = if isTouch then 'touchend' else 'mouseup'
