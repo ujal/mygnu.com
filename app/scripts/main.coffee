@@ -46,8 +46,8 @@ class CharParticle
     updatePosition: () ->
         @width   = @el.offsetWidth
         @height  = @el.offsetHeight
-        @originX = @el.getBoundingClientRect().left + @width/2
-        @originY = @el.getBoundingClientRect().top + @height/2 - 150
+        @originX = @el.getBoundingClientRect().left + @width / 2
+        @originY = @el.getBoundingClientRect().top + @height / 2 - 150
 
     update: (time) ->
 
@@ -68,13 +68,13 @@ class CharParticle
             @velocityX += Math.cos(angle) * force
             @velocityY += Math.sin(angle) * force
 
-        # ANTEGRATE vELOCITY
+        # INTEGRATE VELOCITY
         @x += @velocityX
         @y += @velocityY
 
         # ATTRACTED TO START POSITION
-        @velocityX += ( 0 - @x ) * 0.005
-        @velocityY += ( 0 - @y ) * 0.005
+        @velocityX += (0 - @x) * 0.005
+        @velocityY += (0 - @y) * 0.005
 
 
         # APPLY FRICTION
@@ -104,14 +104,13 @@ $ ->
                 if loaded.length == 3
                   $('body').css opacity: 1
 
+
     # PARSE, SPLIT AND WRAP
     nodes = document.querySelectorAll('.split')
     walk(node, wrapChars) for node in nodes
 
-
     # CREATE PARTICLES
     charParticles = (new CharParticle el for el in document.querySelectorAll('.char'))
-
 
     # ANIMATION LOOP
     animate = ->
