@@ -1,5 +1,6 @@
 'use strict'
 
+
 [mX, mY] = [null, null]
 isHover  = false
 
@@ -19,8 +20,8 @@ walk = (node, func) ->
 
 wrapChars = (node) ->
     # TODO: SUPPORT MORE TYPES
-    textNodes = (child for child in node.childNodes when child.nodeType is 3)
-    words = (textNode.nodeValue for textNode in textNodes).join('').split(' ')
+    textNodes    = (child for child in node.childNodes when child.nodeType is 3)
+    words        = (textNode.nodeValue for textNode in textNodes).join('').split(' ')
     wrappedWords = (for word in words
                         chars = word.split('')
                         wrappedChars = ("<span class='char'>#{char}</span>" for char in chars)
@@ -28,7 +29,6 @@ wrapChars = (node) ->
 
     node.firstChild.remove()
     node.insertAdjacentHTML 'afterbegin', wrappedWords.join('')
-
 
 
 class CharParticle
@@ -51,14 +51,14 @@ class CharParticle
 
     update: (time) ->
 
-        # Attracted to pointer
+        # ATTRACTED TO POINTER
         dx = mX - (@originX + @x)
         dy = mY - (@originY + @y)
 
-        # Distance to pointer
+        # DISTANCE TO POINTER
         d  = Math.sqrt(dx * dx + dy * dy)
 
-        # Angle to pointer
+        # ANGLE TO POINTER
         angle = Math.atan2(dy, dx)
 
         if isHover
@@ -68,16 +68,16 @@ class CharParticle
             @velocityX += Math.cos(angle) * force
             @velocityY += Math.sin(angle) * force
 
-        # Integrate Velocity
+        # ANTEGRATE vELOCITY
         @x += @velocityX
         @y += @velocityY
 
-        # Attracted to start position
+        # ATTRACTED TO START POSITION
         @velocityX += ( 0 - @x ) * 0.005
         @velocityY += ( 0 - @y ) * 0.005
 
 
-        # Apply friction
+        # APPLY FRICTION
         @velocityX *= 0.90
         @velocityY *= 0.90
 
@@ -88,6 +88,7 @@ class CharParticle
 
     render: () ->
         @el.style[transformProp] = if @isSettled then "translateZ(0)" else "translate3d(#{ @x }px, #{ @y }px, 0)"
+
 
 $ ->
 
@@ -162,6 +163,8 @@ $ ->
         fsm.showWork()    if $(e.target).hasClass 'btn-work'
         fsm.showContact() if $(e.target).hasClass 'btn-contact'
 
+
+    setLogo = (c) -> $('.logo .icon-gnu').html(c)
     fsm = StateMachine.create
         events: [
             { name: 'startup',     from: 'none', to: 'intro' }
@@ -184,9 +187,9 @@ $ ->
               $(".page-#{ to }").css display: 'block', opacity: 1
 
               switch to
-                when 'intro' then $('.logo .icon-gnu').html('A')
-                when 'skills' then $('.logo .icon-gnu').html('S')
-                when 'work' then $('.logo .icon-gnu').html('W')
-                when 'contact' then $('.logo .icon-gnu').html('C')
+                when 'intro'   then setLogo('A')
+                when 'skills'  then setLogo('S')
+                when 'work'    then setLogo('W')
+                when 'contact' then setLogo('C')
 
     fsm.startup()

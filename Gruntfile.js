@@ -290,8 +290,7 @@ module.exports = function (grunt) {
                         '.htaccess',
                         'images/{,*/}*.{webp,gif,png,svg}',
                         'styles/fonts/{,*/}*.*',
-                        'bower_components/requirejs/require.js',
-                        'scripts/vendor/modernizr.custom.js'
+                        'scripts/vendor/*.*'
                     ]
                 }]
             }
