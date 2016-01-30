@@ -121,38 +121,34 @@ $ ->
 
 
     # EVENTS
-    isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints
+    pointerdown = 'touchstart mousedown'
+    pointerup   = 'touchend mouseup'
 
-    pointerdown = if isTouch then 'touchstart' else 'mousedown'
-    pointerup   = if isTouch then 'touchend' else 'mouseup'
-
-    onMouseMove = (e) ->
-        if isTouch
+    onPointer = (e) ->
+        if e.touches
             mX = parseInt e.touches[0].pageX, 10
             mY = parseInt e.touches[0].pageY, 10
         else
             mX = parseInt e.pageX, 10
             mY = parseInt e.pageY, 10
 
-    if isTouch then document.addEventListener 'touchstart', onMouseMove, false
-    else document.addEventListener 'mousemove', onMouseMove, false
+    document.addEventListener 'touchstart', onPointer, false
+    document.addEventListener 'mousemove', onPointer, false
 
-    if not isTouch
-      $('.nav li').hover(
-          ->
-              (p.isSettled = false) for p in charParticles
-              isHover = true
-          ->
-              isHover = false
-      )
+    $('.nav li').hover(
+      ->
+          (p.isSettled = false) for p in charParticles
+          isHover = true
+      ->
+          isHover = false
+    )
 
     $('.nav li').on pointerdown, ->
         (p.isSettled = false) for p in charParticles
         isHover = true
 
     $('.nav li').on pointerup, ->
-        if isTouch then setTimeout (-> isHover = false), 200
-        else isHover = false
+        isHover = false
 
 
     # STATE TRANSITIONS
