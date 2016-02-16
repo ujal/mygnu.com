@@ -1,40 +1,13 @@
 'use strict'
 
 
+transformProp = Modernizr.prefixed 'transform'
+
 [mX, mY] = [null, null]
 isHover  = false
 
-# TRANSITION AND TRANSOFRM NORMALIZATION
-transitionEnds =
-    'WebkitTransition' : 'webkitTransitionEnd'
-    'MozTransition'    : 'transitionend'
-    'transition'       : 'transitionend'
-
-transitionEnd = transitionEnds[Modernizr.prefixed 'transition']
-transformProp = Modernizr.prefixed 'transform'
-
-# WALK THE DOM
-walk = (node, func) ->
-    walk(child, func) for child in node.childNodes when child.nodeType is 1
-    func(node)
-
-wrapChars = (node) ->
-    # TODO: SUPPORT MORE TYPES
-    textNodes    = (child for child in node.childNodes when child.nodeType is 3)
-    words        = (textNode.nodeValue for textNode in textNodes).join('').split(' ')
-    wrappedWords = (for word in words
-                        chars = word.split('')
-                        wrappedChars = ("<span class='char'>#{char}</span>" for char in chars)
-                        "<span class='word'>#{wrappedChars.join('')}</span>")
-
-    node.firstChild.remove()
-    node.insertAdjacentHTML 'afterbegin', wrappedWords.join('')
-
-
 class CharParticle
     constructor: (@el) ->
-        @time = 0
-
         @x = 0
         @y = 0
         @velocityX = 0
@@ -49,7 +22,7 @@ class CharParticle
         @originX = @el.getBoundingClientRect().left + @width / 2
         @originY = @el.getBoundingClientRect().top + @height / 2 - 150
 
-    update: (time) ->
+    update: () ->
 
         # ATTRACTED TO POINTER
         dx = mX - (@originX + @x)
@@ -76,18 +49,44 @@ class CharParticle
         @velocityX += (0 - @x) * 0.005
         @velocityY += (0 - @y) * 0.005
 
-
         # APPLY FRICTION
         @velocityX *= 0.90
         @velocityY *= 0.90
 
         @isSettled = if (Math.abs(@x) < 0.03 and Math.abs(@y) < 0.03) and not isHover then true else false
-        @render()
 
-        @time = time
+        @render()
 
     render: () ->
         @el.style[transformProp] = if @isSettled then "translateZ(0)" else "translate3d(#{ @x }px, #{ @y }px, 0)"
+
+
+# TRANSITION NORMALIZATION
+transitionEnds =
+    'WebkitTransition' : 'webkitTransitionEnd'
+    'MozTransition'    : 'transitionend'
+    'transition'       : 'transitionend'
+
+transitionEnd = transitionEnds[Modernizr.prefixed 'transition']
+
+
+# WALK THE DOM
+walk = (node, func) ->
+    walk(child, func) for child in node.childNodes when child.nodeType is 1
+    func(node)
+
+
+wrapChars = (node) ->
+    # TODO: SUPPORT MORE TYPES
+    textNodes    = (child for child in node.childNodes when child.nodeType is 3)
+    words        = (textNode.nodeValue for textNode in textNodes).join('').split(' ')
+    wrappedWords = (for word in words
+                        chars = word.split('')
+                        wrappedChars = ("<span class='char'>#{char}</span>" for char in chars)
+                        "<span class='word'>#{wrappedChars.join('')}</span>")
+
+    node.firstChild.remove()
+    node.insertAdjacentHTML 'afterbegin', wrappedWords.join ''
 
 
 $ ->
@@ -96,13 +95,13 @@ $ ->
     loaded = []
     WebFont.load
         custom:
-          families: ['Vollkorn:i4', 'Montserrat:n4,n7']
+            families: ['Vollkorn:i4', 'Montserrat:n4,n7']
 
         fontactive: (familyName, fvd) ->
-                loaded.push(fvd)
+            loaded.push(fvd)
 
-                if loaded.length == 3
-                  $('body').css opacity: 1
+            if loaded.length == 3
+                $('body').css opacity: 1
 
 
     # PARSE, SPLIT AND WRAP
@@ -136,10 +135,10 @@ $ ->
     document.addEventListener 'mousemove', onPointer, false
 
     $('.nav li').hover(
-      ->
+        ->
           (p.isSettled = false) for p in charParticles
           isHover = true
-      ->
+        ->
           isHover = false
     )
 
@@ -159,7 +158,7 @@ $ ->
         fsm.showContact() if $(e.target).hasClass 'btn-contact'
 
 
-    setLogo = (c) -> $('.logo .icon-gnu').html(c)
+    setLogo = (c) -> $('.logo .icon-gnu').html c
     fsm = StateMachine.create
         events: [
             { name: 'startup',     from: 'none', to: 'intro' }
@@ -182,9 +181,9 @@ $ ->
               $(".page-#{ to }").css display: 'block', opacity: 1
 
               switch to
-                when 'intro'   then setLogo('A')
-                when 'skills'  then setLogo('S')
-                when 'work'    then setLogo('W')
-                when 'contact' then setLogo('C')
+                when 'intro'   then setLogo 'A'
+                when 'skills'  then setLogo 'S'
+                when 'work'    then setLogo 'W'
+                when 'contact' then setLogo 'C'
 
     fsm.startup()
