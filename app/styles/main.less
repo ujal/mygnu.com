@@ -141,6 +141,7 @@ body {
 
 .page-contact a, .page-work a { display: block; }
 
+
 /*
  * Char specifics
  */
@@ -150,21 +151,24 @@ a {
   cursor: pointer;
   text-decoration: none;
 
+  &:visited { color: #333; }
+
   &:hover, &:link,
-  &:active, &focus, &:visited {
+  &:active, &focus {
     color: black;
     outline: none;
     -moz-outline-style: none;
   }
+
 
   .char {
     background: transparent;
     cursor: pointer;
     word-break: break-all;
 
-    &:hover {
-      color: black;
-    }
+    /*&:hover {*/
+      /*color: black;*/
+    /*}*/
   }
 }
 
