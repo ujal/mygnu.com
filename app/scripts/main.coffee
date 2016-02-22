@@ -181,9 +181,9 @@ $ ->
               $(".page-#{ to }").css display: 'block', opacity: 1
 
               switch to
-                when 'intro'   then setLogo 'A'
-                when 'skills'  then setLogo 'S'
-                when 'work'    then setLogo 'W'
-                when 'contact' then setLogo 'C'
+                when 'intro'   then setLogo 'ABOUT'
+                when 'skills'  then setLogo 'SKILLS'
+                when 'work'    then setLogo 'WORK'
+                when 'contact' then setLogo 'CONTACT'
 
     fsm.startup()

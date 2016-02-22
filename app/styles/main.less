@@ -30,16 +30,12 @@ html {
   overflow-x: hidden;
 }
 
-html, body { min-height: 100%; }
+html, body { height: 100%; }
 body {
     opacity: 0;
     transition: opacity 1.5s;
     text-align: center;
     background: hsla(0, 10%, 98%, 1);
-    padding-top: 3.3rem * 3;
-
-    /*ff scroll bug*/
-    margin-bottom: -1rem;
 }
 
 
@@ -47,25 +43,21 @@ body {
  * Logo
  */
 
+.logo {
+  /*display: block;*/
+  padding: (3.3rem * 3) 0 (3.3rem * 3);
+  position: relative;
+  z-index: 100;
+  font-weight: bold;
+  font-size: (2.4rem * 1.5);
+}
+
 .icon-gnu {
-  font-size: 9rem;
   font-family: "Montserrat";
   display: inline-block;
   position: relative;
-  height: 8rem;
   line-height: 1;
 }
-
-.logo {
-  opacity: 0;
-  display: block;
-  text-align: center;
-  margin: 0 auto (3.3rem * 2) auto;
-  position: relative;
-  z-index: 100;
-  vertical-align: middle;
-}
-
 
 /*
  * Nav
@@ -90,7 +82,6 @@ body {
         cursor: pointer;
         margin: 0 auto;
         left: 0; right: 0;
-        transform: translateZ(0);
         transition: opacity .15s linear;
         opacity: 1;
      }
@@ -105,6 +96,18 @@ body {
  * Pages
  */
 
+.page-wrap {
+    margin: (3.3rem * 2) 0 0;
+    transform: translateZ(0);
+    height: 30rem;
+}
+
+@media screen and (max-width: 480px) {
+  .page-wrap {
+    height: 40rem;
+  }
+}
+
 .page {
     display: block;
     position: absolute;
@@ -115,12 +118,6 @@ body {
     transition: opacity 0.15s linear;
     font: italic 2.2rem/1.5 Vollkorn, @font-family-serif;
     margin: 0 auto;
-}
-
-.page-wrap {
-    margin: (3.3rem * 2) auto 3.3rem;
-    transform: translateZ(0);
-    height: 30rem;
 }
 
 .page-skills {
@@ -151,11 +148,9 @@ a {
   cursor: pointer;
   text-decoration: none;
 
-  &:visited { color: #333; }
-
-  &:hover, &:link,
+  &:link, &:visited, &:hover,
   &:active, &focus {
-    color: black;
+    color: #333;
     outline: none;
     -moz-outline-style: none;
   }
@@ -180,6 +175,7 @@ a {
 
 .char {
     display: inline-block;
+    position: relative;
     background: transparent;
     cursor: text;
     user-select: text;
