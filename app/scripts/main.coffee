@@ -90,6 +90,9 @@ wrapChars = (node) ->
 
 
 $ ->
+    setTimeout ->
+        $(window).scrollTop 0
+    , 0 # Chrome e.pageY bug on scrolled reload
 
     # WAIT FOR FONTS
     loaded = []
@@ -108,8 +111,12 @@ $ ->
     nodes = document.querySelectorAll('.split')
     walk(node, wrapChars) for node in nodes
 
+
     # CREATE PARTICLES
-    charParticles = (new CharParticle el for el in document.querySelectorAll('.char'))
+    charParticles = []
+    setTimeout ->
+        charParticles = (new CharParticle el for el in document.querySelectorAll('.char'))
+    , 200 #IOS .page-intro onPointer bug
 
     # ANIMATION LOOP
     animate = ->
@@ -125,11 +132,11 @@ $ ->
 
     onPointer = (e) ->
         if e.touches
-            mX = parseInt e.touches[0].pageX, 10
-            mY = parseInt e.touches[0].pageY, 10
+            mX = e.touches[0].pageX
+            mY = e.touches[0].pageY
         else
-            mX = parseInt e.pageX, 10
-            mY = parseInt e.pageY, 10
+            mX = e.pageX
+            mY = e.pageY
 
     document.addEventListener 'touchstart', onPointer, false
     document.addEventListener 'mousemove', onPointer, false
@@ -169,7 +176,10 @@ $ ->
         ],
         callbacks:
             onstartup: (e, from, to) ->
-              $('.page').not(".page-#{ to }").css opacity: 0, display: 'none'
+              setTimeout ->
+                  $('.page').not(".page-#{ to }").css opacity: 0, display: 'none'
+              , 250
+
               $('.logo').css opacity: 1
 
             onleavestate: (e, from, to) ->

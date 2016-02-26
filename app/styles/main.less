@@ -25,11 +25,6 @@
   cursor: default;
 }
 
-html {
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
-
 html, body { height: 100%; }
 body {
     opacity: 0;
@@ -38,6 +33,10 @@ body {
     background: hsla(0, 10%, 98%, 1);
 }
 
+.content {
+  /*IOS zoom out bug*/
+  overflow-x: hidden;
+}
 
 /*
  * Logo
