@@ -31,6 +31,9 @@ body {
     transition: opacity 1.5s;
     text-align: center;
     background: hsla(0, 10%, 98%, 1);
+    background: hsla(54, 100%, 55%, .7);
+    background: hsla(52, 100%, 55%, .1);
+    color: #111;
 }
 
 .content {
@@ -44,11 +47,12 @@ body {
 
 .logo {
   /*display: block;*/
-  padding: (3.3rem * 3) 0 (3.3rem * 3);
+  padding: (3rem * 3) 0 (3rem * 1);
   position: relative;
   z-index: 100;
   font-weight: bold;
-  font-size: (2.4rem * 1.5);
+  font-size: (3rem * 1.25);
+  line-height: 1;
 }
 
 .icon-gnu {
@@ -65,13 +69,11 @@ body {
 .nav {
     display: block;
     z-index: 100;
-    font: 700 2.4rem/1.5 Montserrat, @font-family-sans-serif;
-    color: #423F37;
+    font: 700 2.5rem/1 Montserrat, @font-family-sans-serif;
     list-style: none;
     text-align: center;
     padding: 0;
     margin: (0) 0 (0);
-    color: hsla(0, 0%, 0%, 1);
     transform: translateZ(100px);
 
     li {
@@ -86,9 +88,55 @@ body {
      }
 
      .btn-contact {
-       font-size: .7em;
-       line-height: 3.6rem; }
+       font-size: 1.5rem;
+       margin-top: 1rem;
+       /*line-height: 3.6rem;*/
+     }
 }
+
+/*
+ *Divider
+ */
+
+  .divider {
+    width: 3rem;
+    height: .25rem;
+    background: #111;
+    margin: (3rem * 3) auto (3rem * 3);
+    position: relative;
+    transform: rotate(45deg);
+    z-index: -100;
+
+    &:after {
+      display: block;
+      position: absolute;
+      content: "△";
+      margin: auto;
+      left: 0;
+      right: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      transform: scale(2) translateY(-250%);
+      line-height: 1;
+    }
+  }
+
+/*
+ *Invert
+ */
+
+  .invert {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    right: 0;
+    bottom: 0;
+    -webkit-backdrop-filter: invert(100%);
+    z-index: 100;
+    pointer-events: none;
+    display: none;
+  }
 
 
 /*
@@ -96,7 +144,7 @@ body {
  */
 
 .page-wrap {
-    margin: (3.3rem * 2) 0 0;
+    margin: (0) 0 0;
     transform: translateZ(0);
     height: 30rem;
 }
@@ -147,13 +195,13 @@ body {
  */
 
 a {
-  color: #333;
+  color: #111;
   cursor: pointer;
   text-decoration: none;
 
   &:link, &:visited, &:hover,
   &:active, &focus {
-    color: #333;
+    color: #111;
     outline: none;
     -moz-outline-style: none;
   }

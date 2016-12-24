@@ -58,7 +58,7 @@ class CharParticle
         @render()
 
     render: () ->
-        @el.style[transformProp] = if @isSettled then "translateZ(0)" else "translate3d(#{ @x }px, #{ @y }px, 0)"
+        @el.style[transformProp] = "translate3d(#{ @x }px, #{ @y }px, 0) rotate(#{@x}deg)"
 
 
 # TRANSITION NORMALIZATION
