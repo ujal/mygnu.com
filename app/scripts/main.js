@@ -1,1 +1,293 @@
-(function(){"use strict";var a,b,c,d,e,f,g,h,i,j;f=Modernizr.prefixed("transform"),e=[null,null],c=e[0],d=e[1],b=!1,a=function(){function a(a){this.el=a,this.x=0,this.y=0,this.velocityX=0,this.velocityY=0,this.updatePosition(),this.isSettled=!0}return a.prototype.updatePosition=function(){return this.width=this.el.offsetWidth,this.height=this.el.offsetHeight,this.originX=this.el.getBoundingClientRect().left+this.width/2,this.originY=this.el.getBoundingClientRect().top+this.height/2-150},a.prototype.update=function(){var a,e,f,g,h;return f=c-(this.originX+this.x),g=d-(this.originY+this.y),e=Math.sqrt(f*f+g*g),a=Math.atan2(g,f),b&&(h=1-e/1e3,h*=5*h,this.velocityX+=Math.cos(a)*h,this.velocityY+=Math.sin(a)*h),this.x+=this.velocityX,this.y+=this.velocityY,this.velocityX+=.005*(0-this.x),this.velocityY+=.005*(0-this.y),this.velocityX*=.9,this.velocityY*=.9,this.isSettled=Math.abs(this.x)<.03&&Math.abs(this.y)<.03&&!b?!0:!1,this.render()},a.prototype.render=function(){return this.el.style[f]="translate3d("+this.x+"px, "+this.y+"px, 0) rotate("+this.x+"deg)"},a}(),h={WebkitTransition:"webkitTransitionEnd",MozTransition:"transitionend",transition:"transitionend"},g=h[Modernizr.prefixed("transition")],i=function(a,b){var c,d,e,f;for(f=a.childNodes,d=0,e=f.length;e>d;d++)c=f[d],1===c.nodeType&&i(c,b);return b(a)},j=function(a){var b,c,d,e,f,g,h,i,j;return f=function(){var b,c,e,f;for(e=a.childNodes,f=[],b=0,c=e.length;c>b;b++)d=e[b],3===d.nodeType&&f.push(d);return f}(),h=function(){var a,b,c;for(c=[],a=0,b=f.length;b>a;a++)e=f[a],c.push(e.nodeValue);return c}().join("").split(" "),j=function(){var a,d,e;for(e=[],a=0,d=h.length;d>a;a++)g=h[a],c=g.split(""),i=function(){var a,d,e;for(e=[],a=0,d=c.length;d>a;a++)b=c[a],e.push("<span class='char'>"+b+"</span>");return e}(),e.push("<span class='word'>"+i.join("")+"</span>");return e}(),a.firstChild.remove(),a.insertAdjacentHTML("afterbegin",j.join(""))},$(function(){var e,f,h,k,l,m,n,o,p,q,r,s;for(setTimeout(function(){return $(window).scrollTop(0)},0),m=[],WebFont.load({custom:{families:["Vollkorn:i4","Montserrat:n4,n7"]},fontactive:function(a,b){return m.push(b),3===m.length?$("body").css({opacity:1}):void 0}}),o=document.querySelectorAll(".split"),k=0,l=o.length;l>k;k++)n=o[k],i(n,j);return f=[],setTimeout(function(){var b;return f=function(){var c,d,e,f;for(e=document.querySelectorAll(".char"),f=[],c=0,d=e.length;d>c;c++)b=e[c],f.push(new a(b));return f}()},200),e=function(){var a,b,c;for(a=0,b=f.length;b>a;a++)c=f[a],c.isSettled||c.update();return requestAnimationFrame(e)},e(),q="touchstart mousedown",r="touchend mouseup",p=function(a){return a.touches?(c=a.touches[0].pageX,d=a.touches[0].pageY):(c=a.pageX,d=a.pageY)},document.addEventListener("touchstart",p,!1),document.addEventListener("mousemove",p,!1),$(".nav li").hover(function(){var a,c,d;for(a=0,c=f.length;c>a;a++)d=f[a],d.isSettled=!1;return b=!0},function(){return b=!1}),$(".nav li").on(q,function(){var a,c,d;for(a=0,c=f.length;c>a;a++)d=f[a],d.isSettled=!1;return b=!0}),$(".nav li").on(r,function(){return b=!1}),$(".nav li").on(r,function(a){return $(a.target).hasClass("btn-intro")&&h.showIntro(),$(a.target).hasClass("btn-skills")&&h.showSkills(),$(a.target).hasClass("btn-work")&&h.showWork(),$(a.target).hasClass("btn-contact")?h.showContact():void 0}),s=function(a){return $(".logo .icon-gnu").html(a)},h=StateMachine.create({events:[{name:"startup",from:"none",to:"intro"},{name:"showIntro",from:["intro","skills","work","contact"],to:"intro"},{name:"showSkills",from:["intro","skills","work","contact"],to:"skills"},{name:"showWork",from:["intro","skills","work","contact"],to:"work"},{name:"showContact",from:["intro","skills","work","contact"],to:"contact"}],callbacks:{onstartup:function(a,b,c){return setTimeout(function(){return $(".page").not(".page-"+c).css({opacity:0,display:"none"})},250),$(".logo").css({opacity:1})},onleavestate:function(a,b,c){return"none"!==b?$(".page-"+b).css({opacity:0}).one(g,function(){return $(this).css({display:"none"})}):void 0},onenterstate:function(a,b,c){if("none"!==b)switch($(".page-"+c).css({display:"block",opacity:1}),c){case"intro":return s("ABOUT");case"skills":return s("SKILLS");case"work":return s("WORK");case"contact":return s("CONTACT")}}}}),h.startup()})}).call(this);
+(function() {
+  'use strict';
+  var CharParticle, isHover, mX, mY, ref, transformProp, transitionEnd, transitionEnds, walk, wrapChars;
+
+  transformProp = Modernizr.prefixed('transform');
+
+  ref = [null, null], mX = ref[0], mY = ref[1];
+
+  isHover = false;
+
+  CharParticle = (function() {
+    function CharParticle(el1) {
+      this.el = el1;
+      this.x = 0;
+      this.y = 0;
+      this.velocityX = 0;
+      this.velocityY = 0;
+      this.updatePosition();
+      this.isSettled = true;
+    }
+
+    CharParticle.prototype.updatePosition = function() {
+      this.width = this.el.getBoundingClientRect().width;
+      this.height = this.el.getBoundingClientRect().height;
+      this.originX = this.el.getBoundingClientRect().left + this.width / 2;
+      return this.originY = this.el.getBoundingClientRect().top + this.height / 2 - 125;
+    };
+
+    CharParticle.prototype.update = function() {
+      var angle, d, dx, dy, force;
+      dx = mX - (this.originX + this.x);
+      dy = mY - (this.originY + this.y);
+      d = Math.sqrt(dx * dx + dy * dy);
+      angle = Math.atan2(dy, dx);
+      if (isHover) {
+        force = 1 - d / 1000;
+        force *= force * 5;
+        this.velocityX += Math.cos(angle) * force;
+        this.velocityY += Math.sin(angle) * force;
+      }
+      this.x += this.velocityX;
+      this.y += this.velocityY;
+      this.velocityX += (0 - this.x) * 0.005;
+      this.velocityY += (0 - this.y) * 0.005;
+      this.velocityX *= 0.90;
+      this.velocityY *= 0.90;
+      this.isSettled = (Math.abs(this.x) < 0.03 && Math.abs(this.y) < 0.03) && !isHover ? true : false;
+      return this.render();
+    };
+
+    CharParticle.prototype.render = function() {
+      return this.el.style[transformProp] = "translate3d(" + this.x + "px, " + this.y + "px, 0) rotate(" + this.x + "deg)";
+    };
+
+    return CharParticle;
+
+  })();
+
+  transitionEnds = {
+    'WebkitTransition': 'webkitTransitionEnd',
+    'MozTransition': 'transitionend',
+    'transition': 'transitionend'
+  };
+
+  transitionEnd = transitionEnds[Modernizr.prefixed('transition')];
+
+  walk = function(node, func) {
+    var child, i, len, ref1;
+    ref1 = node.childNodes;
+    for (i = 0, len = ref1.length; i < len; i++) {
+      child = ref1[i];
+      if (child.nodeType === 1) {
+        walk(child, func);
+      }
+    }
+    return func(node);
+  };
+
+  wrapChars = function(node) {
+    var char, chars, child, textNode, textNodes, word, words, wrappedChars, wrappedWords;
+    textNodes = (function() {
+      var i, len, ref1, results;
+      ref1 = node.childNodes;
+      results = [];
+      for (i = 0, len = ref1.length; i < len; i++) {
+        child = ref1[i];
+        if (child.nodeType === 3) {
+          results.push(child);
+        }
+      }
+      return results;
+    })();
+    words = ((function() {
+      var i, len, results;
+      results = [];
+      for (i = 0, len = textNodes.length; i < len; i++) {
+        textNode = textNodes[i];
+        results.push(textNode.nodeValue);
+      }
+      return results;
+    })()).join('').split(' ');
+    wrappedWords = (function() {
+      var i, len, results;
+      results = [];
+      for (i = 0, len = words.length; i < len; i++) {
+        word = words[i];
+        chars = word.split('');
+        wrappedChars = (function() {
+          var j, len1, results1;
+          results1 = [];
+          for (j = 0, len1 = chars.length; j < len1; j++) {
+            char = chars[j];
+            results1.push("<div class='char'>" + char + "</div>");
+          }
+          return results1;
+        })();
+        results.push("<div class='word'>" + (wrappedChars.join('')) + "</div>");
+      }
+      return results;
+    })();
+    node.firstChild.remove();
+    return node.insertAdjacentHTML('afterbegin', wrappedWords.join(''));
+  };
+
+  $(function() {
+    var animate, charParticles, el, fsm, i, j, len, len1, loaded, node, nodes, onPointer, pointerdown, pointerup, ref1;
+    setTimeout(function() {
+      return $(window).scrollTop(0);
+    }, 0);
+    loaded = [];
+    WebFont.load({
+      custom: {
+        families: ['Vollkorn:i4', 'Montserrat:n4,n7']
+      },
+      fontactive: function(familyName, fvd) {
+        loaded.push(fvd);
+        if (loaded.length === 3) {
+          return $('body').css({
+            opacity: 1
+          });
+        }
+      }
+    });
+    nodes = document.querySelectorAll('.split');
+    for (i = 0, len = nodes.length; i < len; i++) {
+      node = nodes[i];
+      walk(node, wrapChars);
+    }
+    charParticles = (function() {
+      var j, len1, ref1, results;
+      ref1 = document.querySelectorAll('.char');
+      results = [];
+      for (j = 0, len1 = ref1.length; j < len1; j++) {
+        el = ref1[j];
+        results.push(new CharParticle(el));
+      }
+      return results;
+    })();
+    ref1 = document.querySelectorAll('.dot');
+    for (j = 0, len1 = ref1.length; j < len1; j++) {
+      el = ref1[j];
+      charParticles.push(new CharParticle(el));
+    }
+    animate = function() {
+      var k, len2, p;
+      for (k = 0, len2 = charParticles.length; k < len2; k++) {
+        p = charParticles[k];
+        if (!p.isSettled) {
+          p.update();
+        }
+      }
+      return requestAnimationFrame(animate);
+    };
+    animate();
+    pointerdown = 'touchstart mousedown';
+    pointerup = 'touchend mouseup';
+    onPointer = function(e) {
+      if (e.touches) {
+        mX = e.touches[0].pageX;
+        return mY = e.touches[0].pageY;
+      } else {
+        mX = e.pageX;
+        return mY = e.pageY;
+      }
+    };
+    document.addEventListener('touchstart', onPointer, false);
+    document.addEventListener('mousemove', onPointer, false);
+    $('.nav li').hover(function() {
+      var k, len2, p;
+      for (k = 0, len2 = charParticles.length; k < len2; k++) {
+        p = charParticles[k];
+        p.isSettled = false;
+      }
+      return isHover = true;
+    }, function() {
+      return isHover = false;
+    });
+    $('.nav li').on(pointerdown, function() {
+      var k, len2, p;
+      for (k = 0, len2 = charParticles.length; k < len2; k++) {
+        p = charParticles[k];
+        p.isSettled = false;
+      }
+      return isHover = true;
+    });
+    $('.nav li').on(pointerup, function() {
+      return isHover = false;
+    });
+    $('.nav li').on(pointerup, function(e) {
+      if ($(e.target).hasClass('btn-intro')) {
+        fsm.showIntro();
+      }
+      if ($(e.target).hasClass('btn-skills')) {
+        fsm.showSkills();
+      }
+      if ($(e.target).hasClass('btn-work')) {
+        fsm.showWork();
+      }
+      if ($(e.target).hasClass('btn-contact')) {
+        return fsm.showContact();
+      }
+    });
+    fsm = StateMachine.create({
+      events: [
+        {
+          name: 'startup',
+          from: 'none',
+          to: 'intro'
+        }, {
+          name: 'showIntro',
+          from: ['intro', 'skills', 'work', 'contact'],
+          to: 'intro'
+        }, {
+          name: 'showSkills',
+          from: ['intro', 'skills', 'work', 'contact'],
+          to: 'skills'
+        }, {
+          name: 'showWork',
+          from: ['intro', 'skills', 'work', 'contact'],
+          to: 'work'
+        }, {
+          name: 'showContact',
+          from: ['intro', 'skills', 'work', 'contact'],
+          to: 'contact'
+        }
+      ],
+      callbacks: {
+        onstartup: function(e, from, to) {
+          $('.page').not(".page-" + to).css({
+            opacity: 0,
+            display: 'none'
+          });
+          return $('.title').not(".title-" + to).css({
+            opacity: 0,
+            display: 'none'
+          });
+        },
+        onleavestate: function(e, from, to) {
+          if (from === 'none') {
+            return;
+          }
+          $(".page-" + from).css({
+            opacity: 0
+          }).one(transitionEnd, function() {
+            return $(this).css({
+              display: 'none'
+            });
+          });
+          return $(".title-" + from).css({
+            opacity: 0
+          }).css({
+            display: 'none'
+          });
+        },
+        onenterstate: function(e, from, to) {
+          if (from === 'none') {
+            return;
+          }
+          $(".page-" + to).css({
+            display: 'block',
+            opacity: 1
+          });
+          return $(".title-" + to).css({
+            display: 'block',
+            opacity: 1
+          });
+        }
+      }
+    });
+    return fsm.startup();
+  });
+
+}).call(this);
