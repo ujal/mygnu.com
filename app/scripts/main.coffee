@@ -110,8 +110,12 @@ $ ->
   walk(node, wrapChars) for node in nodes
 
   # CREATE PARTICLES
-  charParticles = (new CharParticle el for el in document.querySelectorAll('.char'))
-  charParticles.push new CharParticle el for el in document.querySelectorAll('.dot')
+  charParticles = []
+  createParticles = ->
+      charParticles = (new CharParticle el for el in document.querySelectorAll('.char'))
+      charParticles.push new CharParticle el for el in document.querySelectorAll('.dot')
+      charParticles.push new CharParticle el for el in document.querySelectorAll('.divider')
+  createParticles()
 
   # ANIMATION LOOP
   animate = ->
@@ -184,5 +188,14 @@ $ ->
             $(".title-#{ to }").css display: 'block', opacity: 1
 
   fsm.startup()
+
+  resetParticles = ->
+      $('.page').not(".page-#{ fsm.current }").css opacity: 0, display: 'block'
+      $('.title').not(".title-#{ fsm.current }").css opacity: 0, display: 'block'
+      createParticles()
+      $('.page').not(".page-#{ fsm.current }").css opacity: 0, display: 'none'
+      $('.title').not(".title-#{ fsm.current }").css opacity: 0, display: 'none'
+
+  window.addEventListener 'resize', resetParticles
 
 
