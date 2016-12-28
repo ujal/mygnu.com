@@ -43,7 +43,7 @@ module.exports = function (grunt) {
             },
             less: {
                 files: ['<%= yeoman.app %>/styles/{,*/}*.less'],
-                tasks: ['less:development', 'autoprefixer'],
+                tasks: ['less:development', 'postcss'],
                 options: {
                     livereload: true,
                     //spawn: true
@@ -187,12 +187,14 @@ module.exports = function (grunt) {
                 }
             }
         },
-        autoprefixer: {
+        postcss: {
             options: {
-                browsers: ['last 2 version']
+              processors: [
+                require('autoprefixer')({browsers: 'last 2 versions'}), // add vendor prefixes
+              ]
             },
-            files: {
-                src: '.tmp/styles/main.css'
+            dist: {
+              src: '.tmp/styles/main.css'
             }
         },
         imageEmbed: {
@@ -348,7 +350,7 @@ module.exports = function (grunt) {
             //'createDefaultTemplate',
             //'jst',
             'less:development',
-            'autoprefixer',
+            'postcss',
             'connect:livereload',
             'open',
             'watch'
@@ -371,7 +373,7 @@ module.exports = function (grunt) {
         //'createDefaultTemplate',
         //'jst',
         'less:development',
-        'autoprefixer',
+        'postcss',
         //'compass:dist',
         'uglify',
         'useminPrepare',
