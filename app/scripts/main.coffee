@@ -89,115 +89,113 @@ wrapChars = (node) ->
 
 $ ->
   setTimeout ->
-    setTimeout ->
-        $(window).scrollTop 0
-    , 0 # Chrome e.pageY bug on scrolled reload
+      $(window).scrollTop 0
+  , 0 # Chrome e.pageY bug on scrolled reload
 
-    # WAIT FOR FONTS
-    loaded = []
-    WebFont.load
-        custom:
-            families: ['Vollkorn:i4', 'Montserrat:n4,n7']
+  # WAIT FOR FONTS
+  loaded = []
+  WebFont.load
+      custom:
+          families: ['Vollkorn:i4', 'Montserrat:n4,n7']
 
-        fontactive: (familyName, fvd) ->
-            loaded.push(fvd)
+      fontactive: (familyName, fvd) ->
+          loaded.push(fvd)
 
-            if loaded.length == 3
-                $('body').css opacity: 1
-
-
-    # PARSE, SPLIT AND WRAP
-    nodes = document.querySelectorAll('.split')
-    walk(node, wrapChars) for node in nodes
-
-    # CREATE PARTICLES
-    charParticles = []
-    createParticles = ->
-        charParticles = (new CharParticle el for el in document.querySelectorAll('.char'))
-        charParticles.push new CharParticle el for el in document.querySelectorAll('.dot')
-        charParticles.push new CharParticle el for el in document.querySelectorAll('.divider')
-    createParticles()
-
-    # ANIMATION LOOP
-    animate = ->
-        for p in charParticles
-            p.update() if not p.isSettled
-        requestAnimationFrame animate
-    animate()
+          if loaded.length == 3
+              $('body').css opacity: 1
 
 
-    # EVENTS
-    pointerdown = 'touchstart mousedown'
-    pointerup   = 'touchend mouseup'
+  # PARSE, SPLIT AND WRAP
+  nodes = document.querySelectorAll('.split')
+  walk(node, wrapChars) for node in nodes
 
-    onPointer = (e) ->
-        if e.touches
-            mX = e.touches[0].pageX
-            mY = e.touches[0].pageY
-        else
-            mX = e.pageX
-            mY = e.pageY
+  # CREATE PARTICLES
+  charParticles = []
+  createParticles = ->
+      charParticles = (new CharParticle el for el in document.querySelectorAll('.char'))
+      charParticles.push new CharParticle el for el in document.querySelectorAll('.dot')
+      charParticles.push new CharParticle el for el in document.querySelectorAll('.divider')
+  createParticles()
 
-    document.addEventListener 'touchstart', onPointer, false
-    document.addEventListener 'mousemove', onPointer, false
+  # ANIMATION LOOP
+  animate = ->
+      for p in charParticles
+          p.update() if not p.isSettled
+      requestAnimationFrame animate
+  animate()
 
-    $('.nav li').hover(
-        ->
-          (p.isSettled = false) for p in charParticles
-          isHover = true
-        ->
-          isHover = false
-    )
 
-    $('.nav li').on pointerdown, ->
+  # EVENTS
+  pointerdown = 'touchstart mousedown'
+  pointerup   = 'touchend mouseup'
+
+  onPointer = (e) ->
+      if e.touches
+          mX = e.touches[0].pageX
+          mY = e.touches[0].pageY
+      else
+          mX = e.pageX
+          mY = e.pageY
+
+  document.addEventListener 'touchstart', onPointer, false
+  document.addEventListener 'mousemove', onPointer, false
+
+  $('.nav li').hover(
+      ->
         (p.isSettled = false) for p in charParticles
         isHover = true
-
-    $('.nav li').on pointerup, ->
+      ->
         isHover = false
+  )
+
+  $('.nav li').on pointerdown, ->
+      (p.isSettled = false) for p in charParticles
+      isHover = true
+
+  $('.nav li').on pointerup, ->
+      isHover = false
 
 
-    # STATE TRANSITIONS
-    $('.nav li').on pointerup, (e) ->
-        fsm.showIntro()   if $(e.target).hasClass 'btn-intro'
-        fsm.showSkills()  if $(e.target).hasClass 'btn-skills'
-        fsm.showWork()    if $(e.target).hasClass 'btn-work'
-        fsm.showContact() if $(e.target).hasClass 'btn-contact'
+  # STATE TRANSITIONS
+  $('.nav li').on pointerup, (e) ->
+      fsm.showIntro()   if $(e.target).hasClass 'btn-intro'
+      fsm.showSkills()  if $(e.target).hasClass 'btn-skills'
+      fsm.showWork()    if $(e.target).hasClass 'btn-work'
+      fsm.showContact() if $(e.target).hasClass 'btn-contact'
 
 
-    fsm = StateMachine.create
-        events: [
-            { name: 'startup',     from: 'none', to: 'intro' }
-            { name: 'showIntro',   from: ['intro', 'skills', 'work', 'contact'], to: 'intro' }
-            { name: 'showSkills',  from: ['intro', 'skills', 'work', 'contact'], to: 'skills' }
-            { name: 'showWork',    from: ['intro', 'skills', 'work', 'contact'], to: 'work' }
-            { name: 'showContact', from: ['intro', 'skills', 'work', 'contact'], to: 'contact' }
-        ],
-        callbacks:
-            onstartup: (e, from, to) ->
-              $('.page').not(".page-#{ to }").css opacity: 0, display: 'none'
-              $('.title').not(".title-#{ to }").css opacity: 0, display: 'none'
+  fsm = StateMachine.create
+      events: [
+          { name: 'startup',     from: 'none', to: 'intro' }
+          { name: 'showIntro',   from: ['intro', 'skills', 'work', 'contact'], to: 'intro' }
+          { name: 'showSkills',  from: ['intro', 'skills', 'work', 'contact'], to: 'skills' }
+          { name: 'showWork',    from: ['intro', 'skills', 'work', 'contact'], to: 'work' }
+          { name: 'showContact', from: ['intro', 'skills', 'work', 'contact'], to: 'contact' }
+      ],
+      callbacks:
+          onstartup: (e, from, to) ->
+            $('.page').not(".page-#{ to }").css opacity: 0, display: 'none'
+            $('.title').not(".title-#{ to }").css opacity: 0, display: 'none'
 
-            onleavestate: (e, from, to) ->
-              return if from == 'none'
-              $(".page-#{ from }").css(opacity: 0).one transitionEnd, -> $(@).css display: 'none'
-              $(".title-#{ from }").css(opacity: 0).css display: 'none'
+          onleavestate: (e, from, to) ->
+            return if from == 'none'
+            $(".page-#{ from }").css(opacity: 0).one transitionEnd, -> $(@).css display: 'none'
+            $(".title-#{ from }").css(opacity: 0).css display: 'none'
 
-            onenterstate: (e, from, to) ->
-              return if from == 'none'
-              $(".page-#{ to }").css display: 'block', opacity: 1
-              $(".title-#{ to }").css display: 'block', opacity: 1
+          onenterstate: (e, from, to) ->
+            return if from == 'none'
+            $(".page-#{ to }").css display: 'block', opacity: 1
+            $(".title-#{ to }").css display: 'block', opacity: 1
 
-    fsm.startup()
+  fsm.startup()
 
-    resetParticles = ->
-        $('.page').not(".page-#{ fsm.current }").css opacity: 0, display: 'block'
-        $('.title').not(".title-#{ fsm.current }").css opacity: 0, display: 'block'
-        createParticles()
-        $('.page').not(".page-#{ fsm.current }").css opacity: 0, display: 'none'
-        $('.title').not(".title-#{ fsm.current }").css opacity: 0, display: 'none'
+  resetParticles = ->
+      $('.page').not(".page-#{ fsm.current }").css opacity: 0, display: 'block'
+      $('.title').not(".title-#{ fsm.current }").css opacity: 0, display: 'block'
+      createParticles()
+      $('.page').not(".page-#{ fsm.current }").css opacity: 0, display: 'none'
+      $('.title').not(".title-#{ fsm.current }").css opacity: 0, display: 'none'
 
-    window.addEventListener 'resize', resetParticles
-  , 500
+  window.addEventListener 'resize', resetParticles
 
 
