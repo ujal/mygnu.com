@@ -24,6 +24,9 @@
   cursor: default;
 }
 
+html {
+  overflow-y: scroll;
+}
 html, body { height: 100%; }
 body {
   opacity: 0;
@@ -83,8 +86,8 @@ body {
     position: absolute;
     justify-content: center;
     align-items: center;
-    height: 2px;
-    width: 2px;
+    height: 1px;
+    width: 1px;
     font-size: 1rem;
     line-height: 1;
     left: 0;
@@ -92,12 +95,13 @@ body {
     margin: auto;
   }
 
-  .dot-after {
-    /*transform: translateY(1px);*/
+  .dot-before {
+    /*transform: translateY(-1px);*/
+    top: -1px;
   }
 
   .dot-after {
-    transform: translateY(-1px);
+    /*transform: translateY(0);*/
   }
 }
 
@@ -273,6 +277,7 @@ a {
   cursor: text;
   transform: translateZ(-100px);
   transform-style: flat;
+  z-index: -1;
 }
 
 .split { margin: 0 auto; }

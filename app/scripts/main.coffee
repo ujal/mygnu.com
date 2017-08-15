@@ -197,5 +197,5 @@ $ ->
       $('.title').not(".title-#{ fsm.current }").css opacity: 0, display: 'none'
 
   window.addEventListener 'resize', resetParticles
-
+  window.addEventListener 'unload', resetParticles
 
