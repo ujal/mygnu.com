@@ -16,16 +16,13 @@
   font-weight: 700;
   src: local('Montserrat-Bold'), url(http://themes.googleusercontent.com/static/fonts/montserrat/v4/IQHow_FEYlDC4Gzy_m8fcnbFhgvWbfSbdVg11QabG8w.woff) format('woff');
 }
-
 @import 'bootstrap.less';
-
-
 * {
   cursor: default;
 }
-
 html {
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 html, body { height: 100%; }
 body {
@@ -37,29 +34,22 @@ body {
   background: hsla(52, 100%, 55%, .1);
   color: #111;
 }
-
 .content {
-  /*IOS zoom out bug*/
-  overflow-x: hidden;
   height: 100%;
   position: relative;
 }
-
 /*
  * Title
  */
-
 .title-wrap {
   position: relative;
   display: flex;
   justify-content: center;
   padding: (3rem * 2.5) 0 (3rem * 1.5);
-
   .title {
     font-family: "Montserrat";
     display: block;
     position: absolute;
-    /*z-index: 100;*/
     font-weight: bold;
     font-size: (3rem * 1.25);
     line-height: 1;
@@ -68,19 +58,15 @@ body {
     right: 0;
   }
 }
-
-
 /*
  *Dots
  */
-
 .dots {
   display: inline-flex;
   position: relative;
   justify-content: center;
   line-height: 1;
   transform: translateZ(0);
-
   .dot {
     display: flex;
     position: absolute;
@@ -94,21 +80,15 @@ body {
     right: 0;
     margin: auto;
   }
-
   .dot-before {
-    /*transform: translateY(-1px);*/
     top: -1px;
   }
-
   .dot-after {
-    /*transform: translateY(0);*/
   }
 }
-
 /*
  * Nav
  */
-
 .nav {
   display: block;
   z-index: 100;
@@ -118,10 +98,8 @@ body {
   padding: 0;
   padding-top: (3rem * 3);
   margin: (0) 0 (0);
-  /*transform: translateZ(0);*/
-
+  user-select: none;
   li {
-    /*transform: translateZ(0);*/
     display: inline-block;
     position: relative;
     cursor: pointer;
@@ -130,24 +108,19 @@ body {
     transition: opacity .15s linear;
     opacity: 1;
     user-select: none;
-
     .dots {
       cursor: pointer;
     }
   }
-
   .btn-contact {
     font-size: 1.5rem;
     margin-top: 1rem;
-    /*line-height: 3.6rem;*/
     user-select: none;
   }
 }
-
 /*
  *Divider
  */
-
 .divider {
   display: flex;
   justify-content: center;
@@ -157,26 +130,10 @@ body {
   margin: (2.5rem * 3) auto (2.5rem * .5);
   position: relative;
   z-index: -100;
-
-  /*&:after {*/
-  /*display: block;*/
-  /*position: absolute;*/
-  /*content: "△";*/
-  /*margin: auto;*/
-  /*left: 0;*/
-  /*right: 0;*/
-  /*top: 0;*/
-  /*width: 100%;*/
-  /*height: 100%;*/
-  /*transform: scale(2) translateY(-250%);*/
-  /*line-height: 1;*/
-  /*}*/
 }
-
 /*
  *Invert
  */
-
 .invert {
   position: absolute;
   width: 50%;
@@ -188,101 +145,76 @@ body {
   pointer-events: none;
   display: none;
 }
-
-
 /*
  * Pages
  */
-
 .page-wrap {
   margin: (0) 0 0;
-  /*transform: translateZ(0);*/
   position: relative;
   z-index: 0;
 }
-
 @media screen and (max-width: 480px) {
   .page.page-intro {
     margin: 0 3.3rem;
   }
 }
-
 .page {
   left: 0;
   top: 0;
   display: block;
   position: absolute;
   text-align: center;
-  /*transform: translateZ(0);*/
   z-index: -100;
   left: 0; right: 0;
   transition: opacity 0.15s linear;
   font: italic 2.2rem/1.5 Vollkorn, @font-family-serif;
   margin: 0 auto;
 }
-
 .page-skills {
   max-width: 30rem;
-
   .sans   { font: normal 1.8rem/1.5 Montserrat, @font-family-sans-serif; }
   .serif  { font: italic 1.6rem/1.5 Vollkorn, @font-family-serif; }
   .inline { width: 50%; float: left; }
 }
-
 .page-work {
   overflow: visible;
-
   .sans   { font: bold 1.8rem/1.5 Montserrat, @font-family-sans-serif; }
   .serif { font: italic 2.2rem/1.5 Vollkorn, @font-family-serif; }
   .more  { font: bold 2.2rem/1.5 Montserrat, @font-family-sans-serif; margin-top: 3.6rem; opacity: 1; display: inline-block; }
 }
-
 .page-work a { display: block; }
-
-
 /*
  * Char specifics
  */
-
 a {
   color: #111;
   cursor: pointer;
   text-decoration: none;
-
   &:link, &:visited, &:hover,
   &:active, &focus {
     color: #111;
     outline: none;
     -moz-outline-style: none;
   }
-
   .char {
     background: transparent;
     cursor: pointer;
     word-break: break-all;
   }
 }
-
 .word {
   display: inline-block;
-  /*transform: translateZ(0);*/
-
   &:after {
     content: '\00a0';
     display: inline-block;
     position: relative;
   }
 }
-
 .char {
   display: inline-block;
-  /*position: relative;*/
   background: transparent;
   cursor: text;
-  /*transform: translateZ(-100px);*/
-  /*transform-style: flat;*/
   z-index: -1;
 }
-
 .split { margin: 0 auto; }
 .break { margin-bottom: 1rem; }

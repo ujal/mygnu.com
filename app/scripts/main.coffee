@@ -20,7 +20,7 @@ class CharParticle
         @width   = @el.getBoundingClientRect().width
         @height  = @el.getBoundingClientRect().height
         @originX = @el.getBoundingClientRect().left + @width / 2
-        @originY = @el.getBoundingClientRect().top + @height / 2 - 125
+        @originY = @el.getBoundingClientRect().top + @height / 2 - 100
 
     update: () ->
         # ATTRACTED TO POINTER
@@ -130,15 +130,11 @@ $ ->
   pointerup   = 'touchend mouseup'
 
   onPointer = (e) ->
-      if e.touches
-          mX = e.touches[0].pageX
-          mY = e.touches[0].pageY
-      else
-          mX = e.pageX
-          mY = e.pageY
+    mX = e.pageX
+    mY = e.pageY
 
-  document.addEventListener 'touchstart', onPointer, false
-  document.addEventListener 'mousemove', onPointer, false
+  document.addEventListener 'touchstart', onPointer
+  document.addEventListener 'mousemove', onPointer
 
   $('.nav li').hover(
       ->
@@ -148,12 +144,23 @@ $ ->
         isHover = false
   )
 
-  $('.nav li').on pointerdown, ->
+  timeSincePointerDown = 0
+  $('.nav li').on pointerdown, (e) ->
       (p.isSettled = false) for p in charParticles
       isHover = true
+      timeSincePointerDown = +new Date
 
-  $('.nav li').on pointerup, ->
-      isHover = false
+  $('.nav li').on pointerup, (e) ->
+      e.preventDefault()
+      if e.type == 'touchend'
+        if +new Date - timeSincePointerDown < 500
+          setTimeout ->
+            isHover = false
+          , 500
+        else
+          isHover = false
+      else
+        isHover = false
 
 
   # STATE TRANSITIONS
