@@ -158,10 +158,10 @@ $ ->
 
   # STATE TRANSITIONS
   $('.nav li').on pointerup, (e) ->
-      fsm.showIntro()   if $(e.target).hasClass 'btn-intro'
-      fsm.showSkills()  if $(e.target).hasClass 'btn-skills'
-      fsm.showWork()    if $(e.target).hasClass 'btn-work'
-      fsm.showContact() if $(e.target).hasClass 'btn-contact'
+      fsm.showIntro()   if $(e.currentTarget).hasClass 'btn-intro'
+      fsm.showSkills()  if $(e.currentTarget).hasClass 'btn-skills'
+      fsm.showWork()    if $(e.currentTarget).hasClass 'btn-work'
+      fsm.showContact() if $(e.currentTarget).hasClass 'btn-contact'
 
 
   fsm = StateMachine.create
