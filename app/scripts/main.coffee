@@ -114,22 +114,22 @@ fsm = StateMachine.create
     callbacks:
         onstartup: (e, from, to) ->
           $('.page').not(".page-#{ to }").css opacity: 0, display: 'none'
-          $('.title').css opacity: 0, transform: 'translateZ(0) scale(0)'
+          $('.title').css opacity: 0, transform: 'scale(0)'
 
         onbeforeevent: (e, from, to) ->
           if from == to
-            $(".title-#{ to }").css opacity: 0, transform: 'translateZ(0) scale(0)'
+            $(".title-#{ to }").css opacity: 0, transform: 'scale(0)'
             delay(100).then ->
-              $(".title-#{ to }").css opacity: 1, transform: 'translateZ(0) scale(1)'
+              $(".title-#{ to }").css opacity: 1, transform: 'scale(1)'
 
         onleavestate: (e, from, to) ->
           return if from == 'none'
           $(".page-#{ from }").css(opacity: 0).one transitionEnd, -> $(@).css display: 'none'
-          $(".title-#{ from }").css opacity: 0, transform: 'translateZ(0) scale(0)'
+          $(".title-#{ from }").css opacity: 0, transform: 'scale(0)'
 
         onenterstate: (e, from, to) ->
           $(".page-#{ to }").css display: 'block', opacity: 1
-          $(".title-#{ to }").css opacity: 1, transform: 'translateZ(0) scale(1)'
+          $(".title-#{ to }").css opacity: 1, transform: 'scale(1)'
 
 
 # HANDLERS
@@ -144,6 +144,7 @@ onPointer = (e) ->
   mX = e.pageX
   mY = e.pageY
 
+timeSincePointerDown = 0
 onPointerDown = (e) ->
   (p.isSettled = false) for p in charParticles
   isHover = true
@@ -179,7 +180,6 @@ onPointerLeave = ->
 bindEvents = ->
   pointerdown = 'touchstart mousedown'
   pointerup = 'touchend mouseup'
-  timeSincePointerDown = 0
   window.addEventListener 'resize', resetParticles
   window.addEventListener 'pageshow', resetParticles
   document.addEventListener 'touchstart', onPointer
@@ -203,23 +203,23 @@ startIntroAnimation = ->
 
     delay 50
   .then ->
-    $('.btn-about').css opacity: 1, transform: 'translateZ(0) scale(1)'
+    $('.btn-about').css opacity: 1, transform: 'scale(1)'
 
     delay 50
   .then ->
-    $('.btn-skills').css opacity: 1, transform: 'translateZ(0) scale(1)'
+    $('.btn-skills').css opacity: 1, transform: 'scale(1)'
 
     delay 50
   .then ->
-    $('.btn-work').css opacity: 1, transform: 'translateZ(0) scale(1)'
+    $('.btn-work').css opacity: 1, transform: 'scale(1)'
 
     delay 50
   .then ->
-    $('.btn-contact').css opacity: 1, transform: 'translateZ(0) scale(1)'
+    $('.btn-contact').css opacity: 1, transform: 'scale(1)'
 
     delay 50
   .then ->
-    $('.title-about').css opacity: 1, transform: 'translateZ(0) scale(1)'
+    $('.title-about').css opacity: 1, transform: 'scale(1)'
 
 init = ->
   walk(node, wrapChars) for node in nodes
