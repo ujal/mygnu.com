@@ -1,11 +1,5 @@
 'use strict'
 
-
-transformProp = Modernizr.prefixed 'transform'
-
-[mX, mY] = [window.innerWidth / 2, window.innerHeight / 3]
-isHover  = true
-
 class CharParticle
     constructor: (@el) ->
         @x = 0
@@ -73,7 +67,6 @@ walk = (node, func) ->
     walk(child, func) for child in node.childNodes when child.nodeType is 1
     func(node)
 
-
 wrapChars = (node) ->
     # TODO: SUPPORT MORE TYPES
     textNodes    = (child for child in node.childNodes when child.nodeType is 3)
@@ -87,111 +80,140 @@ wrapChars = (node) ->
     node.insertAdjacentHTML 'afterbegin', wrappedWords.join ''
 
 
+# PARSE, SPLIT AND WRAP
+nodes = document.querySelectorAll('.split')
+
+
+# CREATE PARTICLES
+transformProp = Modernizr.prefixed 'transform'
+[mX, mY] = [window.innerWidth / 2, window.innerHeight / 3]
+isHover  = true
+charParticles = []
+createParticles = ->
+    charParticles = (new CharParticle el for el in document.querySelectorAll('.char'))
+    charParticles.push new CharParticle el for el in document.querySelectorAll('.dot')
+    charParticles.push new CharParticle el for el in document.querySelectorAll('.divider')
+
+
+# ANIMATION LOOP
+animate = ->
+    for p in charParticles
+        p.update() if not p.isSettled
+    requestAnimationFrame animate
+
+
+# STATE TRANSITIONS
+fsm = StateMachine.create
+    events: [
+        { name: 'startup',     from: 'none', to: 'intro' }
+        { name: 'showIntro',   from: ['intro', 'skills', 'work', 'contact'], to: 'intro' }
+        { name: 'showSkills',  from: ['intro', 'skills', 'work', 'contact'], to: 'skills' }
+        { name: 'showWork',    from: ['intro', 'skills', 'work', 'contact'], to: 'work' }
+        { name: 'showContact', from: ['intro', 'skills', 'work', 'contact'], to: 'contact' }
+    ],
+    callbacks:
+        onstartup: (e, from, to) ->
+          $('.page').not(".page-#{ to }").css opacity: 0, display: 'none'
+          $('.title').css opacity: 0, transform: 'translateZ(0) scale(0)'
+
+        onleavestate: (e, from, to) ->
+          return if from == 'none'
+          $(".page-#{ from }").css(opacity: 0).one transitionEnd, -> $(@).css display: 'none'
+          $(".title-#{ from }").css opacity: 0, transform: 'translateZ(0) scale(0)'
+
+        onenterstate: (e, from, to) ->
+          $(".page-#{ to }").css display: 'block', opacity: 1
+          $(".title-#{ to }").css opacity: 1, transform: 'translateZ(0) scale(1)'
+
+
+# HANDLERS
+resetParticles = ->
+    $('.page').not(".page-#{ fsm.current }").css opacity: 0, display: 'block'
+    $('.title').not(".title-#{ fsm.current }").css opacity: 0
+    createParticles()
+    $('.page').not(".page-#{ fsm.current }").css opacity: 0, display: 'none'
+    $('.title').not(".title-#{ fsm.current }").css opacity: 0
+
+onPointer = (e) ->
+  mX = e.pageX
+  mY = e.pageY
+
+onPointerDown = (e) ->
+  (p.isSettled = false) for p in charParticles
+  isHover = true
+  timeSincePointerDown = +new Date
+
+onPointerUp = (e) ->
+  e.preventDefault()
+
+  fsm.showIntro()   if $(e.currentTarget).hasClass 'btn-intro'
+  fsm.showSkills()  if $(e.currentTarget).hasClass 'btn-skills'
+  fsm.showWork()    if $(e.currentTarget).hasClass 'btn-work'
+  fsm.showContact() if $(e.currentTarget).hasClass 'btn-contact'
+
+  if e.type == 'touchend'
+   if +new Date - timeSincePointerDown < 500
+     setTimeout ->
+       isHover = false
+     , 500
+   else
+     isHover = false
+  else
+   isHover = false
+
+onPointerEnter = ->
+  (p.isSettled = false) for p in charParticles
+  isHover = true
+
+onPointerLeave = ->
+  isHover = false
+
+
+# EVENTS
+bindEvents = ->
+  window.addEventListener 'resize', resetParticles
+  window.addEventListener 'pageshow', resetParticles
+  document.addEventListener 'touchstart', onPointer
+  document.addEventListener 'mousemove', onPointer
+
+
+# INTRO ANIMATION
+startIntroSequence = ->
+  $('body').css opacity: 1
+
+  setTimeout ->
+    isHover = false
+    pointerdown = 'touchstart mousedown'
+    pointerup = 'touchend mouseup'
+    timeSincePointerDown = 0
+
+    (p.isSettled = false) for p in charParticles
+
+    $('.nav li').on pointerdown, onPointerDown
+    $('.nav li').on pointerup, onPointerUp
+    $('.nav li').hover onPointerEnter, onPointerLeave
+
+    setTimeout ->
+      $('.nav').css opacity: 1
+
+      setTimeout ->
+        $('.title-intro').css opacity: 1, transform: 'translateZ(0) scale(1)'
+      , 500
+    , 500
+  , 500
+
+init = ->
+  walk(node, wrapChars) for node in nodes
+  createParticles()
+  animate()
+  fsm.startup()
+
+
 $ ->
   setTimeout ->
       $(window).scrollTop 0
   , 0 # Chrome e.pageY bug on scrolled reload
 
-
-  # PARSE, SPLIT AND WRAP
-  nodes = document.querySelectorAll('.split')
-  walk(node, wrapChars) for node in nodes
-
-  # CREATE PARTICLES
-  charParticles = []
-  createParticles = ->
-      charParticles = (new CharParticle el for el in document.querySelectorAll('.char'))
-      charParticles.push new CharParticle el for el in document.querySelectorAll('.dot')
-      charParticles.push new CharParticle el for el in document.querySelectorAll('.divider')
-  createParticles()
-
-  # ANIMATION LOOP
-  animate = ->
-      for p in charParticles
-          p.update() if not p.isSettled
-      requestAnimationFrame animate
-  animate()
-
-
-  # EVENTS
-  pointerdown = 'touchstart mousedown'
-  pointerup   = 'touchend mouseup'
-
-  onPointer = (e) ->
-    mX = e.pageX
-    mY = e.pageY
-
-  document.addEventListener 'touchstart', onPointer
-  document.addEventListener 'mousemove', onPointer
-
-  $('.nav li').hover(
-      ->
-        (p.isSettled = false) for p in charParticles
-        isHover = true
-      ->
-        isHover = false
-  )
-
-  timeSincePointerDown = 0
-  $('.nav li').on pointerdown, (e) ->
-      (p.isSettled = false) for p in charParticles
-      isHover = true
-      timeSincePointerDown = +new Date
-
-  $('.nav li').on pointerup, (e) ->
-      e.preventDefault()
-      if e.type == 'touchend'
-        if +new Date - timeSincePointerDown < 500
-          setTimeout ->
-            isHover = false
-          , 500
-        else
-          isHover = false
-      else
-        isHover = false
-
-  # STATE TRANSITIONS
-  $('.nav li').on pointerup, (e) ->
-      fsm.showIntro()   if $(e.currentTarget).hasClass 'btn-intro'
-      fsm.showSkills()  if $(e.currentTarget).hasClass 'btn-skills'
-      fsm.showWork()    if $(e.currentTarget).hasClass 'btn-work'
-      fsm.showContact() if $(e.currentTarget).hasClass 'btn-contact'
-
-
-  fsm = StateMachine.create
-      events: [
-          { name: 'startup',     from: 'none', to: 'intro' }
-          { name: 'showIntro',   from: ['intro', 'skills', 'work', 'contact'], to: 'intro' }
-          { name: 'showSkills',  from: ['intro', 'skills', 'work', 'contact'], to: 'skills' }
-          { name: 'showWork',    from: ['intro', 'skills', 'work', 'contact'], to: 'work' }
-          { name: 'showContact', from: ['intro', 'skills', 'work', 'contact'], to: 'contact' }
-      ],
-      callbacks:
-          onstartup: (e, from, to) ->
-            $('.page').not(".page-#{ to }").css opacity: 0, display: 'none'
-            $('.title').css opacity: 0, transform: 'translateZ(0) scale(0)'
-
-          onleavestate: (e, from, to) ->
-            return if from == 'none'
-            $(".page-#{ from }").css(opacity: 0).one transitionEnd, -> $(@).css display: 'none'
-            $(".title-#{ from }").css opacity: 0, transform: 'translateZ(0) scale(0)'
-
-          onenterstate: (e, from, to) ->
-            $(".page-#{ to }").css display: 'block', opacity: 1
-            $(".title-#{ to }").css opacity: 1, transform: 'translateZ(0) scale(1)'
-
-  fsm.startup()
-
-  resetParticles = ->
-      $('.page').not(".page-#{ fsm.current }").css opacity: 0, display: 'block'
-      $('.title').not(".title-#{ fsm.current }").css opacity: 0
-      createParticles()
-      $('.page').not(".page-#{ fsm.current }").css opacity: 0, display: 'none'
-      $('.title').not(".title-#{ fsm.current }").css opacity: 0
-
-
-  window.addEventListener 'resize', resetParticles
-  window.addEventListener 'pageshow', resetParticles
 
   # WAIT FOR FONTS
   loaded = []
@@ -201,20 +223,7 @@ $ ->
 
       fontactive: (familyName, fvd) ->
           loaded.push(fvd)
-
           if loaded.length == 3
-              $('body').css opacity: 1
-              setTimeout ->
-                (p.isSettled = false) for p in charParticles
-                isHover = false
-
-                setTimeout ->
-                  $('.nav').css opacity: 1
-
-                  setTimeout ->
-                    $('.title-intro').css opacity: 1, transform: 'translateZ(0) scale(1)'
-                  , 250
-                , 500
-              , 500
-
-
+            init()
+            startIntroSequence()
+            bindEvents()
