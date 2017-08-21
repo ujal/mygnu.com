@@ -105,16 +105,22 @@ animate = ->
 # STATE TRANSITIONS
 fsm = StateMachine.create
     events: [
-        { name: 'startup',     from: 'none', to: 'intro' }
-        { name: 'showIntro',   from: ['intro', 'skills', 'work', 'contact'], to: 'intro' }
-        { name: 'showSkills',  from: ['intro', 'skills', 'work', 'contact'], to: 'skills' }
-        { name: 'showWork',    from: ['intro', 'skills', 'work', 'contact'], to: 'work' }
-        { name: 'showContact', from: ['intro', 'skills', 'work', 'contact'], to: 'contact' }
+        { name: 'startup',     from: 'none', to: 'about' }
+        { name: 'showAbout',   from: ['about', 'skills', 'work', 'contact'], to: 'about' }
+        { name: 'showSkills',  from: ['about', 'skills', 'work', 'contact'], to: 'skills' }
+        { name: 'showWork',    from: ['about', 'skills', 'work', 'contact'], to: 'work' }
+        { name: 'showContact', from: ['about', 'skills', 'work', 'contact'], to: 'contact' }
     ],
     callbacks:
         onstartup: (e, from, to) ->
           $('.page').not(".page-#{ to }").css opacity: 0, display: 'none'
           $('.title').css opacity: 0, transform: 'translateZ(0) scale(0)'
+
+        onbeforeevent: (e, from, to) ->
+          if from == to
+            $(".title-#{ to }").css opacity: 0, transform: 'translateZ(0) scale(0)'
+            delay(100).then ->
+              $(".title-#{ to }").css opacity: 1, transform: 'translateZ(0) scale(1)'
 
         onleavestate: (e, from, to) ->
           return if from == 'none'
@@ -146,7 +152,7 @@ onPointerDown = (e) ->
 onPointerUp = (e) ->
   e.preventDefault()
 
-  fsm.showIntro()   if $(e.currentTarget).hasClass 'btn-intro'
+  fsm.showAbout()   if $(e.currentTarget).hasClass 'btn-about'
   fsm.showSkills()  if $(e.currentTarget).hasClass 'btn-skills'
   fsm.showWork()    if $(e.currentTarget).hasClass 'btn-work'
   fsm.showContact() if $(e.currentTarget).hasClass 'btn-contact'
@@ -171,36 +177,49 @@ onPointerLeave = ->
 
 # EVENTS
 bindEvents = ->
+  pointerdown = 'touchstart mousedown'
+  pointerup = 'touchend mouseup'
+  timeSincePointerDown = 0
   window.addEventListener 'resize', resetParticles
   window.addEventListener 'pageshow', resetParticles
   document.addEventListener 'touchstart', onPointer
   document.addEventListener 'mousemove', onPointer
+  $('.nav li').on pointerdown, onPointerDown
+  $('.nav li').on pointerup, onPointerUp
+  $('.nav li').hover onPointerEnter, onPointerLeave
 
 
 # INTRO ANIMATION
-startIntroSequence = ->
+delay = (t) ->
+  new Promise (resolve) ->
+    setTimeout resolve, t
+
+startIntroAnimation = ->
   $('body').css opacity: 1
 
-  setTimeout ->
+  delay(1000).then ->
     isHover = false
-    pointerdown = 'touchstart mousedown'
-    pointerup = 'touchend mouseup'
-    timeSincePointerDown = 0
-
     (p.isSettled = false) for p in charParticles
 
-    $('.nav li').on pointerdown, onPointerDown
-    $('.nav li').on pointerup, onPointerUp
-    $('.nav li').hover onPointerEnter, onPointerLeave
+    delay 50
+  .then ->
+    $('.btn-about').css opacity: 1, transform: 'translateZ(0) scale(1)'
 
-    setTimeout ->
-      $('.nav').css opacity: 1
+    delay 50
+  .then ->
+    $('.btn-skills').css opacity: 1, transform: 'translateZ(0) scale(1)'
 
-      setTimeout ->
-        $('.title-intro').css opacity: 1, transform: 'translateZ(0) scale(1)'
-      , 500
-    , 500
-  , 500
+    delay 50
+  .then ->
+    $('.btn-work').css opacity: 1, transform: 'translateZ(0) scale(1)'
+
+    delay 50
+  .then ->
+    $('.btn-contact').css opacity: 1, transform: 'translateZ(0) scale(1)'
+
+    delay 50
+  .then ->
+    $('.title-about').css opacity: 1, transform: 'translateZ(0) scale(1)'
 
 init = ->
   walk(node, wrapChars) for node in nodes
@@ -225,5 +244,6 @@ $ ->
           loaded.push(fvd)
           if loaded.length == 3
             init()
-            startIntroSequence()
-            bindEvents()
+            startIntroAnimation().then ->
+              bindEvents()
+
