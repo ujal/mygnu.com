@@ -3,8 +3,8 @@
 
 transformProp = Modernizr.prefixed 'transform'
 
-[mX, mY] = [null, null]
-isHover  = false
+[mX, mY] = [window.innerWidth / 2, window.innerHeight / 3]
+isHover  = true
 
 class CharParticle
     constructor: (@el) ->
@@ -14,7 +14,7 @@ class CharParticle
         @velocityY = 0
 
         @updatePosition()
-        @isSettled = true
+        @isSettled = false
 
     updatePosition: () ->
         @width   = @el.getBoundingClientRect().width
@@ -92,18 +92,6 @@ $ ->
       $(window).scrollTop 0
   , 0 # Chrome e.pageY bug on scrolled reload
 
-  # WAIT FOR FONTS
-  loaded = []
-  WebFont.load
-      custom:
-          families: ['Vollkorn:i4', 'Montserrat:n4,n7']
-
-      fontactive: (familyName, fvd) ->
-          loaded.push(fvd)
-
-          if loaded.length == 3
-              $('body').css opacity: 1
-
 
   # PARSE, SPLIT AND WRAP
   nodes = document.querySelectorAll('.split')
@@ -162,7 +150,6 @@ $ ->
       else
         isHover = false
 
-
   # STATE TRANSITIONS
   $('.nav li').on pointerup, (e) ->
       fsm.showIntro()   if $(e.currentTarget).hasClass 'btn-intro'
@@ -182,27 +169,52 @@ $ ->
       callbacks:
           onstartup: (e, from, to) ->
             $('.page').not(".page-#{ to }").css opacity: 0, display: 'none'
-            $('.title').not(".title-#{ to }").css opacity: 0, display: 'none'
+            $('.title').css opacity: 0, transform: 'translateZ(0) scale(0)'
 
           onleavestate: (e, from, to) ->
             return if from == 'none'
             $(".page-#{ from }").css(opacity: 0).one transitionEnd, -> $(@).css display: 'none'
-            $(".title-#{ from }").css(opacity: 0).css display: 'none'
+            $(".title-#{ from }").css opacity: 0, transform: 'translateZ(0) scale(0)'
 
           onenterstate: (e, from, to) ->
-            return if from == 'none'
             $(".page-#{ to }").css display: 'block', opacity: 1
-            $(".title-#{ to }").css display: 'block', opacity: 1
+            $(".title-#{ to }").css opacity: 1, transform: 'translateZ(0) scale(1)'
 
   fsm.startup()
 
   resetParticles = ->
       $('.page').not(".page-#{ fsm.current }").css opacity: 0, display: 'block'
-      $('.title').not(".title-#{ fsm.current }").css opacity: 0, display: 'block'
+      $('.title').not(".title-#{ fsm.current }").css opacity: 0
       createParticles()
       $('.page').not(".page-#{ fsm.current }").css opacity: 0, display: 'none'
-      $('.title').not(".title-#{ fsm.current }").css opacity: 0, display: 'none'
+      $('.title').not(".title-#{ fsm.current }").css opacity: 0
+
 
   window.addEventListener 'resize', resetParticles
   window.addEventListener 'pageshow', resetParticles
+
+  # WAIT FOR FONTS
+  loaded = []
+  WebFont.load
+      custom:
+          families: ['Vollkorn:i4', 'Montserrat:n4,n7']
+
+      fontactive: (familyName, fvd) ->
+          loaded.push(fvd)
+
+          if loaded.length == 3
+              $('body').css opacity: 1
+              setTimeout ->
+                (p.isSettled = false) for p in charParticles
+                isHover = false
+
+                setTimeout ->
+                  $('.nav').css opacity: 1
+
+                  setTimeout ->
+                    $('.title-intro').css opacity: 1, transform: 'translateZ(0) scale(1)'
+                  , 250
+                , 500
+              , 500
+
 
