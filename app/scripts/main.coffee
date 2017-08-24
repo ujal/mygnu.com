@@ -112,15 +112,15 @@ fsm = StateMachine.create
         { name: 'showContact', from: ['about', 'skills', 'work', 'contact'], to: 'contact' }
     ],
     callbacks:
-        onstartup: (e, from, to) ->
-          $('.page').not(".page-#{ to }").css opacity: 0, display: 'none'
-          $('.title').css opacity: 0, transform: 'scale(0)'
-
         onbeforeevent: (e, from, to) ->
           if from == to
             $(".title-#{ to }").css opacity: 0, transform: 'scale(0)'
             delay(100).then ->
               $(".title-#{ to }").css opacity: 1, transform: 'scale(1)'
+
+        onstartup: (e, from, to) ->
+          $('.page').not(".page-#{ to }").css opacity: 0, display: 'none'
+          $('.title').css opacity: 0, transform: 'scale(0)'
 
         onleavestate: (e, from, to) ->
           return if from == 'none'
