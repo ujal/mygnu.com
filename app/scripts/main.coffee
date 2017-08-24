@@ -195,7 +195,7 @@ delay = (t) ->
     setTimeout resolve, t
 
 startIntroAnimation = ->
-  $('.body').css opacity: 1
+  $('body').css opacity: 1
 
   delay(1000).then ->
     isHover = false
