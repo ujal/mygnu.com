@@ -224,9 +224,6 @@ startIntroAnimation = ->
   .then ->
     $('.title-about').css opacity: 1, transform: 'scale(1)'
 
-  .then ->
-    $('.invert').css opacity: 1
-
 init = ->
   walk(node, wrapChars) for node in nodes
   createParticles()
