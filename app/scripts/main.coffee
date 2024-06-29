@@ -175,6 +175,8 @@ onPointerEnter = ->
 onPointerLeave = ->
   isHover = false
 
+onMouseMove = (e) ->
+  $('.invert').width e.pageX
 
 # EVENTS
 bindEvents = ->
@@ -184,6 +186,7 @@ bindEvents = ->
   window.addEventListener 'pageshow', resetParticles
   document.addEventListener 'touchstart', onPointer
   document.addEventListener 'mousemove', onPointer
+  document.addEventListener 'mousemove', onMouseMove
   $('.nav li').on pointerdown, onPointerDown
   $('.nav li').on pointerup, onPointerUp
   $('.nav li').hover onPointerEnter, onPointerLeave

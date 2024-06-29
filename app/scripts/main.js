@@ -1,6 +1,6 @@
 (function() {
   'use strict';
-  var CharParticle, animate, bindEvents, charParticles, createParticles, delay, fsm, init, isHover, mX, mY, nodes, onPointer, onPointerDown, onPointerEnter, onPointerLeave, onPointerUp, ref, resetParticles, startIntroAnimation, timeSincePointerDown, transformProp, transitionEnd, transitionEnds, walk, wrapChars;
+  var CharParticle, animate, bindEvents, charParticles, createParticles, delay, fsm, init, isHover, mX, mY, nodes, onMouseMove, onPointer, onPointerDown, onPointerEnter, onPointerLeave, onPointerUp, ref, resetParticles, startIntroAnimation, timeSincePointerDown, transformProp, transitionEnd, transitionEnds, walk, wrapChars;
 
   CharParticle = (function() {
     function CharParticle(el1) {
@@ -316,6 +316,10 @@
     return isHover = false;
   };
 
+  onMouseMove = function(e) {
+    return $('.invert').width(e.pageX);
+  };
+
   bindEvents = function() {
     var pointerdown, pointerup;
     pointerdown = 'touchstart mousedown';
@@ -324,6 +328,7 @@
     window.addEventListener('pageshow', resetParticles);
     document.addEventListener('touchstart', onPointer);
     document.addEventListener('mousemove', onPointer);
+    document.addEventListener('mousemove', onMouseMove);
     $('.nav li').on(pointerdown, onPointerDown);
     $('.nav li').on(pointerup, onPointerUp);
     return $('.nav li').hover(onPointerEnter, onPointerLeave);
