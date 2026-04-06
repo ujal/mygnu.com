@@ -175,7 +175,11 @@ onPointerEnter = ->
 onPointerLeave = ->
   isHover = false
 
+supportsTouch = 'ontouchstart' in window || navigator.msMaxTouchPoints;
+
 onMouseMove = (e) ->
+  if supportsTouch
+    return
   $('.invert').width e.pageX
 
 # EVENTS
